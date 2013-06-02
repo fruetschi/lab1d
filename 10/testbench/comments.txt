@@ -1,0 +1,5 @@
+Es existieren private keys (im Realsystem SmartCards) fuer 2 Benutzer:
+
+UserID		PIN
+1		23456
+2		12345
