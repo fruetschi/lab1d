@@ -34,7 +34,7 @@ public class Terminal {
 		String userId;
 		long lUserId;
 		try {
-			System.out.print("terminal> UserId: ");
+			System.out.println("terminal> UserId: ");
 			userId = in.readLine();
 		} catch (IOException e) {
 			return;
@@ -52,7 +52,7 @@ public class Terminal {
 		// get encrypted challenge (in real system provided by smartcard)
 		PrivateKey priv;
 		try {
-			 priv = getPrivateKey("./res/terminal/smartcardkeys/" + lUserId + ".pem");
+			 priv = getPrivateKey(Config.RESOURCE_DIRECTORY + "/terminal/smartcardkeys/" + lUserId + ".pem");
 		} catch (IOException e) {
 			System.out.println("terminal> ERR: couldn't read private key (wrong pin?)");
 			return;
@@ -93,7 +93,7 @@ public class Terminal {
 		    @Override
 		    public char[] getPassword() {
 			    // reads the password from standard input for decrypting the private key
-			    System.out.print("terminal> PIN: ");
+			    System.out.println("terminal> PIN: ");
 			    try {
 					return new BufferedReader(new InputStreamReader(System.in)).readLine().toCharArray();
 				} catch (IOException e) {

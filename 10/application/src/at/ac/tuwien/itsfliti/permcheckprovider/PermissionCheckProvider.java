@@ -41,9 +41,9 @@ public class PermissionCheckProvider implements IPermissionCheckProvider {
 	
 	public static void main(String []args) {
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-		System.setProperty("javax.net.ssl.trustStore", "./res/permcheckprovider/trustedSecObjects");
+		System.setProperty("javax.net.ssl.trustStore", Config.RESOURCE_DIRECTORY + "/permcheckprovider/trustedSecObjects");
 		System.setProperty("javax.net.ssl.trustStorePassword", Config.PCP_TRUSTED_PW);
-		System.setProperty("javax.net.ssl.keyStore", "./res/permcheckprovider/keystore");
+		System.setProperty("javax.net.ssl.keyStore", Config.RESOURCE_DIRECTORY + "/permcheckprovider/keystore");
 		System.setProperty("javax.net.ssl.keyStorePassword", Config.PCP_KEYSTORE_PW);
 		
 		SslRMIClientSocketFactory clientFact = new SslRMIClientSocketFactory();
@@ -61,6 +61,7 @@ public class PermissionCheckProvider implements IPermissionCheckProvider {
 			reg = LocateRegistry.createRegistry(Config.REGISTRY_PORT, clientFact, serverFact);
 		} catch (RemoteException e) {
 			System.out.println("could not create rmi registry");
+			e.printStackTrace();
 			return;
 		}
 		
@@ -72,6 +73,12 @@ public class PermissionCheckProvider implements IPermissionCheckProvider {
 			System.out.println("could not communicate with local registry");
 		} catch (AlreadyBoundException e) {
 			System.out.println("name is already bound");
+		}
+				try {
+			System.in.read();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -117,7 +124,7 @@ public class PermissionCheckProvider implements IPermissionCheckProvider {
 				Long id = (Long)invocation.getArguments()[0];
 				PublicKey pub;
 				try {
-					pub = getPublicKey("./res/authobjmanagement/pubkeys/" + id + ".pub.pem");
+					pub = getPublicKey(Config.RESOURCE_DIRECTORY + "/authobjmanagement/pubkeys/" + id + ".pub.pem");
 				} catch(IOException ioe) {
 					return null;
 				}

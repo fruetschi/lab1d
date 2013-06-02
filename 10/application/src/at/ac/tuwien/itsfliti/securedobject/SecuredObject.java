@@ -39,11 +39,11 @@ public class SecuredObject implements ISecuredObject {
 	public static void main(String[] args) {
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 		System.setProperty("javax.net.ssl.keyStore",
-				"./res/securedobject/keystore");
+				Config.RESOURCE_DIRECTORY + "/securedobject/keystore");
 		System.setProperty("javax.net.ssl.keyStorePassword",
 				Config.PCP_KEYSTORE_PW);
 		System.setProperty("javax.net.ssl.trustStore",
-				"./res/securedobject/trustedPermCheckProv");
+				Config.RESOURCE_DIRECTORY + "/securedobject/trustedPermCheckProv");
 		System.setProperty("javax.net.ssl.trustStorePassword",
 				Config.PCP_TRUSTED_PW);
 		//System.setProperty("javax.net.debug", "all");
@@ -52,7 +52,7 @@ public class SecuredObject implements ISecuredObject {
 
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		// this would not be variable in a real system
-		System.out.print("SecuredObjectId: ");
+		System.out.println("SecuredObjectId: ");
 		try {
 			id = Long.parseLong(in.readLine());
 		} catch (NumberFormatException nfe) {
@@ -67,6 +67,7 @@ public class SecuredObject implements ISecuredObject {
 			so = new SecuredObject(id);
 		} catch (RemoteException e) {
 			System.out.println("could not communicate with the registry");
+			e.printStackTrace();
 			return;
 		} catch (NotBoundException e) {
 			System.out

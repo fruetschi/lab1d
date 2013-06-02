@@ -26,11 +26,11 @@
 	</target>
 	
 	<target name="run_pcp" depends="build" description="Permission Check Provider starten.">
-		<java classname="at.ac.tuwien.itsfliti.permcheckprovider.PermissionCheckProvider" fork="true" classpathref="classpath" />
+		<java classname="at.ac.tuwien.itsfliti.permcheckprovider.PermissionCheckProvider" fork="false" classpathref="classpath" />
 	</target>
 	
 	<target name="run_so" depends="build" description="Secure Object starten.">
-		<java classname="at.ac.tuwien.itsfliti.securedobject.SecuredObject" fork="true" classpathref="classpath" />
+		<java classname="at.ac.tuwien.itsfliti.securedobject.SecuredObject" fork="false" classpathref="classpath" />
 	</target>
 	
 	<target name="clean" description="Beseitigen der Builds">

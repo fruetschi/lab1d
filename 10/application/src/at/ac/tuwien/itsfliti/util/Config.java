@@ -10,4 +10,6 @@ public class Config {
 	public static final String SO_TRUSTED_PW = "itsfliti";
 	public static final String SO_KEYSTORE_PW = "itsfliti";
 	public static final String RSA_CIPHER_NAME = "RSA/NONE/OAEPWithSHA256AndMGF1Padding";
+	
+	public static final String RESOURCE_DIRECTORY = "./application/res";
 }
