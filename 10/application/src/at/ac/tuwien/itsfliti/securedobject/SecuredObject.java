@@ -106,13 +106,18 @@ public class SecuredObject implements ISecuredObject {
 
 	@Override
 	public boolean authenticate(byte[] response, long userId) {
+		if(lastChallenge == null)
+			return false;
 		try {
 			if (permProv.checkPermissions(securedObjectId, userId,
 					lastChallenge, response)) {
 				System.out.println("unlocking door...");
+				lastChallenge = null;
 				return true;
 			}
+			lastChallenge = null;
 		} catch (RemoteException e) {
+			lastChallenge = null;
 			initRmi();
 		}
 		System.out.println("authentication/authorization failed...");
