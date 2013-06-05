@@ -9,6 +9,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.security.SecureRandom;
 import java.security.Security;
+import java.util.HashMap;
 
 import javax.rmi.ssl.SslRMIClientSocketFactory;
 
@@ -18,12 +19,14 @@ import at.ac.tuwien.itsfliti.terminal.Terminal;
 import at.ac.tuwien.itsfliti.util.Config;
 
 public class SecuredObject implements ISecuredObject {
-	private byte[] lastChallenge;
+	private HashMap<Long, byte[]> lastChallenges;
+	
 	private long securedObjectId;
 	private IPermissionCheckProvider permProv = null;
 
 	public SecuredObject(long id) {
 		securedObjectId = id;
+		lastChallenges = new HashMap<Long, byte[]>();
 		initRmi();
 	}
 	
@@ -81,46 +84,46 @@ public class SecuredObject implements ISecuredObject {
 			return;
 		}
 		
-		boolean successful = false;
-		
 		ISecuredObject so = new SecuredObject(id);
 		
-		Terminal t = new Terminal(so);
+		int i = 1;
 
 		while (true) {
 			System.out.println("--STARTING TERMINAL SIMULATION--");
+			Terminal t = new Terminal(i++, so);
 			t.startTerminalSimulation();
 			System.out.println("--SIMULATION END--");
 		}
 	}
 
 	@Override
-	public byte[] getChallenge() {
+	public byte[] getChallenge(long terminalId) {
 		// generate random challenge
 		SecureRandom sr = new SecureRandom();
 		byte[] challenge = new byte[32];
 		sr.nextBytes(challenge);
-		lastChallenge = challenge;
+		lastChallenges.put(terminalId, challenge);
 		return challenge;
 	}
 
 	@Override
-	public boolean authenticate(byte[] response, long userId) {
-		if(lastChallenge == null)
+	public boolean authenticate(byte[] response, long userId, long terminalId) {
+		boolean successful = false;
+
+		// if there was no challenge requested from this terminal before -> not authenticated
+		if(lastChallenges.get(terminalId) == null) 
 			return false;
 		try {
-			if (permProv.checkPermissions(securedObjectId, userId,
-					lastChallenge, response)) {
-				System.out.println("unlocking door...");
-				lastChallenge = null;
-				return true;
+			if (permProv.checkPermissions(securedObjectId, terminalId, userId,
+					lastChallenges.get(terminalId), response)) {
+				successful = true;
 			}
-			lastChallenge = null;
 		} catch (RemoteException e) {
-			lastChallenge = null;
+			// in case of an remote exception reinitialize connection (fault tolerance)
 			initRmi();
 		}
-		System.out.println("authentication/authorization failed...");
-		return false;
+		// remove last challenge to prevent replay attacks
+		lastChallenges.remove(terminalId);
+		return successful;
 	}
 }

@@ -22,9 +22,11 @@ import at.ac.tuwien.itsfliti.util.Config;
 
 public class Terminal {
 	private ISecuredObject so;
+	private long id;
 	
-	public Terminal(ISecuredObject so) {
+	public Terminal(long id, ISecuredObject so) {
 		this.so = so;
+		this.id = id;
 	}
 	
 	public void startTerminalSimulation() {
@@ -47,7 +49,7 @@ public class Terminal {
 		}
 		
 		// request challenge from securedobject
-		byte[] challenge = so.getChallenge();
+		byte[] challenge = so.getChallenge(id);
 		
 		// get encrypted challenge (in real system provided by smartcard)
 		PrivateKey priv;
@@ -80,7 +82,7 @@ public class Terminal {
 			return;
 		}
 		
-		if(so.authenticate(response, lUserId)) {
+		if(so.authenticate(response, lUserId, id)) {
 			System.out.println("terminal> *green LED*");
 		} else {
 			System.out.println("terminal> *red LED*");

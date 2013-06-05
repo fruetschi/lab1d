@@ -31,7 +31,7 @@ import at.ac.tuwien.itsfliti.util.Config;
 public class PermissionCheckProvider implements IPermissionCheckProvider {
 	// stores the permissions of users to access different areas
 	// format: userid, securedObjectId
-	private static final int [][]userAccessTable = { {1, 5}, {1, 15}, {1, 25}, {2, 10}, {2, 20}, {2, 5}}; 
+	private static final int [][]userAccessTable = { {1, 5}, {1, 15}, {1, 25}, {2, 10}, {2, 20}, {2, 5}};
 	
 	private IAuthorizationObjectManagement authManagement;
 	
@@ -80,8 +80,10 @@ public class PermissionCheckProvider implements IPermissionCheckProvider {
 	}
 
 	@Override
-	public boolean checkPermissions(long securedObjectId, long userId, byte []challenge,
+	public boolean checkPermissions(long securedObjectId, long terminalId, long userId, byte []challenge,
 			byte []response) throws RemoteException {
+		// in this method audits and notifications would be forwarded to the modules "Auditing" and "Notification System" 
+		
 		if(challenge == null || response == null)
 			return false;
 		PublicKey pubKey = authManagement.getPublicKey(userId);
