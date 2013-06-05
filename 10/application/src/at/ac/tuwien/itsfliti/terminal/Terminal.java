@@ -64,26 +64,26 @@ public class Terminal {
 			rsaEncrypt.init(Cipher.ENCRYPT_MODE, priv);
 			response = rsaEncrypt.doFinal(challenge);
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			System.out.println("terminal> ERR: no such algorithm");
 			return;
 		} catch (NoSuchPaddingException e) {
-			e.printStackTrace();
+			System.out.println("terminal> ERR: no such padding");
 			return;
 		} catch (IllegalBlockSizeException e) {
-			e.printStackTrace();
+			System.out.println("terminal> ERR: illegal block size");
 			return;
 		} catch (BadPaddingException e) {
-			e.printStackTrace();
+			System.out.println("terminal> ERR: bad padding");
 			return;
 		} catch (InvalidKeyException e) {
-			e.printStackTrace();
+			System.out.println("terminal> ERR: invalid key");
 			return;
 		}
 		
 		if(so.authenticate(response, lUserId)) {
-			System.out.println("terminal> *green led*");
+			System.out.println("terminal> *green LED*");
 		} else {
-			System.out.println("terminal> *red led*");
+			System.out.println("terminal> *red LED*");
 		}
 	}
 	

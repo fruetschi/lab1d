@@ -60,8 +60,7 @@ public class PermissionCheckProvider implements IPermissionCheckProvider {
 		try {
 			reg = LocateRegistry.createRegistry(Config.REGISTRY_PORT, clientFact, serverFact);
 		} catch (RemoteException e) {
-			System.out.println("could not create rmi registry");
-			e.printStackTrace();
+			System.out.println("could not create rmi registry (port already in use?)");
 			return;
 		}
 		
@@ -74,11 +73,9 @@ public class PermissionCheckProvider implements IPermissionCheckProvider {
 		} catch (AlreadyBoundException e) {
 			System.out.println("name is already bound");
 		}
-				try {
+		try {
 			System.in.read();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
@@ -97,7 +94,6 @@ public class PermissionCheckProvider implements IPermissionCheckProvider {
 			rsaDecrypt.init(Cipher.DECRYPT_MODE, pubKey);
 			calcChallenge = rsaDecrypt.doFinal(response);
 		} catch (Exception e) {
-			e.printStackTrace();
 			return false;
 		}
 		

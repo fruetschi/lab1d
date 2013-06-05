@@ -22,18 +22,37 @@ public class SecuredObject implements ISecuredObject {
 	private long securedObjectId;
 	private IPermissionCheckProvider permProv = null;
 
-	public SecuredObject(long id) throws RemoteException, NotBoundException {
+	public SecuredObject(long id) {
 		securedObjectId = id;
-
+		initRmi();
+	}
+	
+	public void initRmi() {
 		SslRMIClientSocketFactory clientFact = new SslRMIClientSocketFactory();
 
 		System.out.println("establishing secure connection...");
-		Registry reg;
-
-		reg = LocateRegistry.getRegistry(Config.REGISTRY_HOST,
-				Config.REGISTRY_PORT, clientFact);
-		permProv = (IPermissionCheckProvider) reg
-				.lookup(Config.PERM_CHECK_PROVIDER_BINDING_NAME);
+		boolean successful = false;
+		while(!successful) {
+			try {
+				Registry reg = LocateRegistry.getRegistry(Config.REGISTRY_HOST,
+						Config.REGISTRY_PORT, clientFact);
+				permProv = (IPermissionCheckProvider) reg
+						.lookup(Config.PERM_CHECK_PROVIDER_BINDING_NAME);
+				successful = true;
+			} catch (RemoteException e) {
+				System.out.println("could not communicate with the PCP -> retry");
+			} catch (NotBoundException e) {
+				System.out
+						.println("could not find interface of PermissionCheckProvider in the registry -> retry");
+			}
+			if(!successful) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					return;
+				}
+			}
+		}
 	}
 
 	public static void main(String[] args) {
@@ -61,19 +80,10 @@ public class SecuredObject implements ISecuredObject {
 		} catch (IOException e) {
 			return;
 		}
-
-		ISecuredObject so;
-		try {
-			so = new SecuredObject(id);
-		} catch (RemoteException e) {
-			System.out.println("could not communicate with the registry");
-			e.printStackTrace();
-			return;
-		} catch (NotBoundException e) {
-			System.out
-					.println("could not find interface of PermissionCheckProvider in the registry");
-			return;
-		}
+		
+		boolean successful = false;
+		
+		ISecuredObject so = new SecuredObject(id);
 		
 		Terminal t = new Terminal(so);
 
@@ -103,6 +113,7 @@ public class SecuredObject implements ISecuredObject {
 				return true;
 			}
 		} catch (RemoteException e) {
+			initRmi();
 		}
 		System.out.println("authentication/authorization failed...");
 		return false;
